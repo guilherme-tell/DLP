@@ -1,46 +1,3 @@
-/*module ula4 (	input [3:0]a,b, 
-					input [2:0]op,
-					output reg [3:0] out
-				);
-				
-				
-				always @(*) begin
-					case(op)
-					3'b000 : out = a + b;
-					3'b001 : out = a - b;
-					3'b010 : out = a * b;
-					3'b011 : out = a / b;
-					
-					3'b100 : if(a == b) begin
-								out = 4'b0001;
-								end else begin
-								out = 4'b0000;
-								end
-								
-								
-					3'b101 : if(a > b) begin
-								out = 4'b0001;
-								end else begin
-								out = 4'b0000;
-								end
-								
-					3'b110 : if(a < b) begin
-								out = 4'b0001;
-								end else begin
-								out = 4'b0000;
-								end
-								
-					3'b111 : if(a != b) begin
-								out = 4'b0001;
-								end else begin
-								out = 4'b0000;
-								end
-								
-					default : out = 4'b0000;
-					endcase
-				end
-endmodule*/
-
 module ula4 (	input [3:0] A, B,
 					input [2:0] op,
 					output [3:0] out);
@@ -101,3 +58,46 @@ mux8 muxULA(.soma(out_soma),
 
 	
 endmodule
+
+/*module ula4 (	input [3:0]a,b, 
+					input [2:0]op,
+					output reg [3:0] out
+				);
+				
+				
+				always @(*) begin
+					case(op)
+					3'b000 : out = a + b;
+					3'b001 : out = a - b;
+					3'b010 : out = a * b;
+					3'b011 : out = a / b;
+					
+					3'b100 : if(a == b) begin
+								out = 4'b0001;
+								end else begin
+								out = 4'b0000;
+								end
+								
+								
+					3'b101 : if(a > b) begin
+								out = 4'b0001;
+								end else begin
+								out = 4'b0000;
+								end
+								
+					3'b110 : if(a < b) begin
+								out = 4'b0001;
+								end else begin
+								out = 4'b0000;
+								end
+								
+					3'b111 : if(a != b) begin
+								out = 4'b0001;
+								end else begin
+								out = 4'b0000;
+								end
+								
+					default : out = 4'b0000;
+					endcase
+				end
+endmodule*/
