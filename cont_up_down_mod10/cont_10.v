@@ -4,7 +4,7 @@ module cont_10     (input clk, clr_n, en, up_d,
 	
 	assign TC = (((cnt == 4'd9) & up_d == 1'b1) | ((cnt == 4'd0)) & up_d == 1'b0) ? (1'b1) : (1'b0);
 	
-	always @ (posedge clk or negedge clr_n) begin
+	always @ (negedge clk or negedge clr_n) begin
 	
 		if(~clr_n)			
 			cnt <= 4'd0;				
