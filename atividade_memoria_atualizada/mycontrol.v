@@ -2,7 +2,7 @@ module mycontrol (
                   input clk, reset, enter,FC,
 						input[7:0] senha,
 						input[7:0]out_mem,
-						output reg ena_cnt, status
+						output reg ena_cnt, status, reset_cnt
                   );
 											
 	// Declare state register
@@ -18,21 +18,25 @@ module mycontrol (
 			begin
 				ena_cnt = 1'b0;
 				status =  1'b0;
+				reset_cnt = 1'b1;
 			end
 			S1:
 			begin
 				ena_cnt = 1'b1;
 				status =  1'b0;
+				reset_cnt = 1'b0;				
 			end
 			S2:
 			begin
 				ena_cnt = 1'b0;
 				status =  1'b1;
+				reset_cnt = 1'b0;
 			end
 			default:
 			begin
 				ena_cnt = 1'b0;
 				status =  1'b0;
+				reset_cnt = 1'b0;
 			end
 		endcase
 	end

@@ -6,17 +6,17 @@ module binary_counter
 (
 	input clk, enable, reset,
 	output reg [WIDTH-1:0] count,
-	output FC
+	output reg FC
 );
 
 	// Reset if needed, or increment if counting is enabled
-	always @ (posedge clk or posedge reset)
+	always @ (posedge clk or posedge reset) // or posedge reset_maq
 	begin
-		if (reset)
+		if (reset) // | reset_maq
 			count <= 0;
 		else if (enable == 1'b1)
 			count <= count + 1;
 	end
 
-assign FC = (count ==5'd31);
+	always @ (posedge clk) FC = (count ==5'd31);
 endmodule

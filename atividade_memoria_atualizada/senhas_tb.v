@@ -17,10 +17,10 @@ module senhas_tb ();
 		
 		#100 rst = 1'b0;
 		
-		#150 senha = 8'd146;		
+		#150 senha = 8'd200;		
 		
-		#160 enter = 1'b1;
-		#180 enter = 1'b0;
+		#155 enter = 1'b1;
+		#195 enter = 1'b0;
 		
 		
 		
