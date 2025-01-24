@@ -18,5 +18,5 @@ module binary_counter
 			count <= count + 1;
 	end
 
-	always @ (posedge clk) FC = (count ==5'd31);
+	always @ (posedge clk) FC = (count ==5'd31);		// saída registrada FC -> atraso de + 1 clock
 endmodule
