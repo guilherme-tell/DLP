@@ -1,13 +1,19 @@
-module acess_ctrl (	input clk, rst,enter,
+module acess_ctrl (	input clk0, rst,enter,
 							input [7:0] senha_digitada, 
 							output resultado);
 
+	//rst : SW[17]						// inverter reset caso seja bt e nao sw
+	//enter : KEY[3]				
+	//senha_digitada: SW[7]:SW[0]
+	// resultado : LEDG[0]
+	
 wire [4:0] mem_addr;
 wire [7:0] out_mem;
 wire ena_cnt, rst_cnt;
 //wire FC_cnt;
 wire FC;
 wire enter_sync;
+wire clk;
 
 //assign FC_cnt = (out_mem == senha_digitada) | FC;
 
@@ -45,8 +51,15 @@ myROM	myROM_inst (
 
 sincronizador one_shot( .clr_n(~rst), 
 								.clk(clk),
-								.in(enter),
+								.in(~enter),
 								.out(enter_sync)
 							  );
+							  
+PLL	PLL_inst(								// comentar PLL para simular 
+					 .areset ( rst ),
+					 .inclk0 ( clk0 ),
+					 .c0 ( clk )
+					);
+
 							
 endmodule
