@@ -9,11 +9,11 @@ module ProgramCounter #(parameter pcen = 32, pcout = 32)
 	
 		if(~clr_n)			
 			pc <= 32'd0;				
-		else if (~load_en)
+		else begin if (~load_en)
 			pc <= pc + 32'd4;
 			else 
 				pc <= load;
-		
+		end
 	end
 							 
 
