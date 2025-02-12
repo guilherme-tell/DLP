@@ -1,17 +1,17 @@
-module DataMemory #	(parameter data_w=32, addr_w=5)
+module DataMemory #	(parameter addr_w=5)
 							(input clk,WE,
 							 input [addr_w-1:0] A,
-							 input [data_w-1:0] WD,
-							 output reg [data_w-1:0] RD);
+							 input [31:0] WD,
+							 output reg [31:0] RD);
 		
-	reg [data_w-1:0] mem [0:2**addr_w-1];
+	reg [31:0] mem [0:2**addr_w-1];
 	
 	always @ (posedge clk)begin
 	
-		RD <= mem[A];
-		
 		if(WE)								
-			mem [A] <=  WD;		
+			mem [A] <=  WD;	
+		else
+			RD <= mem[A];
 	end
 							
 endmodule
