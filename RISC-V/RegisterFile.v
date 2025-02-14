@@ -9,6 +9,12 @@ module RegisterFile
 
 	reg [31:0] ram[31:0];
 
+	initial begin
+	
+		$readmemh("regfile_init.txt",ram);			
+
+	end
+	
 
 	always @ (posedge clk)
 	begin

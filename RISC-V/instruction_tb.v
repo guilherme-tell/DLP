@@ -2,7 +2,8 @@
 module instruction_tb ();
 
 	reg clk,rst;
-	wire [31:0] Inst;
+	//wire [31:0] Inst;
+	wire signed [31:0] ALUResult;
 
 
 	initial fork
@@ -16,7 +17,7 @@ module instruction_tb ();
 
 	SC_RISCV riscv( .clk(clk),
 						 .rst(rst),
-						 .Inst(Inst)
+						 .ALUResult(ALUResult)
 				      );
 
 
