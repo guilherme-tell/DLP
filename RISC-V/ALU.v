@@ -1,6 +1,7 @@
 module ALU (input signed [31:0] SrcA,SrcB,
 				input [2:0] ALUCOntrol,
-				output reg signed [31:0] ALUResult );
+				output reg signed [31:0] ALUResult,
+				output Zero);
 
 
 	always @(*)begin
@@ -15,5 +16,6 @@ module ALU (input signed [31:0] SrcA,SrcB,
 		endcase
 	end
 
+	assign Zero = (ALUResult == 32'd0);
 
 endmodule

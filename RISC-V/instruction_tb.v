@@ -17,6 +17,9 @@ module instruction_tb ();
 
 	SC_RISCV riscv( .clk(clk),
 						 .rst(rst),
+						 .ImmSRC(1'b10),
+						 .ALUSrc(1'b0),
+						 .ResultSrc(1'b0),
 						 .ALUResult(ALUResult)
 				      );
 
