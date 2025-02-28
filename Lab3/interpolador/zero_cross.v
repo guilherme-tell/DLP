@@ -1,36 +1,30 @@
-module zero_cross # (N = 3)
-						(input clk, enable,
+module zero_cross 
+						(input clk,
 						input signed [31:0] x,
-						output reg [2**3:0] out
+						output reg flag,
+						output reg [2**3:0] cnt
 						);
 	
-	reg [2**3:0] cnt;
-	reg flag = 1'b0; 
-	reg signed [31:0] x_atual, x_anterior;
+	reg signed [31:0] x_anterior, x_atual;
 	
 	always @ (posedge clk) begin
+	
 		x_atual <= x;
-		
-		if ((x_atual <= 0) & (x_anterior >= 0))
-		begin
-			flag = ~flag;
-		end
 	
+		if((x_atual[31] == 1) &(x_anterior[31] == 0)) begin
+		
+			flag <= 1'b1;
+			cnt <= 9'd0;
+			
+		end else begin 
+		
+			cnt <= cnt + 9'd1;
+			flag <= 1'b0;
+			
+			end
+			
 		x_anterior <= x_atual;
-	end
-	
-	always @ (posedge enable) begin		// enable de mudança de amostra
 		
-		if (flag) begin
-				
-				cnt = cnt + 1'b1;
-				
-			end else begin
-				out = cnt;
-				cnt <= 1'b0;
-				end
 	end
-	
-	
 								
 endmodule
