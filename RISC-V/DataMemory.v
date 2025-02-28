@@ -1,5 +1,5 @@
 module DataMemory #	(parameter addr_w=5)
-							(input clk,WE,
+							(input clk,WE,rst,
 							 input [addr_w-1:0] A,
 							 input [31:0] WD,
 							 output reg [31:0] RD);
@@ -13,12 +13,18 @@ module DataMemory #	(parameter addr_w=5)
 	end
 	
 	
-	always @ (posedge clk)begin
+	always @ (posedge clk or posedge rst)begin
 	
+	if(rst)begin
+	
+		RD <= 32'd0;
+	
+	end else begin
 		if(WE)								
 			mem [A] <=  WD;	
 		else
 			RD <= mem[A];
+	end
 	end
 							
 endmodule

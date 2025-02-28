@@ -1,5 +1,5 @@
 module InstructionMemory #(parameter  addr_w = 4)
-								  (input clk,
+								  (input clk,rst,
 									input [addr_w-1:0] A,
 									output reg [31:0] RD);
 
@@ -11,10 +11,15 @@ module InstructionMemory #(parameter  addr_w = 4)
 
 	end
 	
-	always @ (posedge clk)begin
+	always @ (posedge clk or posedge rst)begin
+	
+	if(rst) begin
+		RD <= 32'd0;
+	end else begin
 	
 		RD <= mem[A];
 	
+	end
 	end
 									
 									
