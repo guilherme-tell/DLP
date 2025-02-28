@@ -24,7 +24,7 @@ module SC_RISCV (input clk,rst,
 	assign Imm_lw = Inst[31:20];
 	assign Imm_sw = {Inst[31:25],Inst[11:7]};		// concatena os 2 segmentos para formar o imediato de sw
 	
-	assign Imm_b = {Inst[31],Inst[7],Inst[30:25],Inst[11:8]};		// concatena os 4 segmentos de imediato p/ instrução do tipo B
+	assign Imm_b = {Inst[31],Inst[7],Inst[30:25],Inst[11:8],1'b0};		// concatena os 4 segmentos de imediato p/ instrução do tipo B + zero no lugar do LSB
 	
 	wire signed [31:0] RD1,RD2,WD3;									
 	wire signed [31:0] ReadData;	
