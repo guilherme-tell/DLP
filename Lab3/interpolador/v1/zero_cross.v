@@ -1,30 +1,37 @@
 module zero_cross 
 						(input clk,
+						input reset,
 						input signed [31:0] x,
 						output reg flag,
-						output reg [9:0] cnt
+						output reg [8:0] cnt
 						);
 	
 	reg signed [31:0] x_anterior, x_atual;
 	
 	always @ (posedge clk) begin
 	
-		x_atual <= x;
+	if(reset)begin
+		cnt <= 9'd0;
+		flag <= 1'b0;
+		end else begin
 	
-		if((x_atual[31] == 1) &(x_anterior[31] == 0)) begin
+			x_atual <= x;
 		
-			flag <= 1'b1;
-			cnt <= 9'd0;
+			if((x_atual[31] == 1) &(x_anterior[31] == 0)) begin
 			
-		end else begin 
-		
-			cnt <= cnt + 9'd1;
-			flag <= 1'b0;
+				flag <= 1'b1;
+				cnt <= 9'd0;
+				
+			end else begin 
 			
-			end
+				cnt <= cnt + 9'd1;
+				flag <= 1'b0;
+				
+				end
+				
+			x_anterior <= x_atual;
 			
-		x_anterior <= x_atual;
-		
+		end
 	end
 								
 endmodule

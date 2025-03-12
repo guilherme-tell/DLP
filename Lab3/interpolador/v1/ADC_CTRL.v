@@ -33,9 +33,10 @@ reg					sclk;
 reg		[3:0]		cont;
 reg		[3:0]		m_cont;
 output reg		[11:0]		adc_data;
+output 			   fim_amostra;
 reg		[7:0]		led;
 
-reg fim;
+reg 					fim;
 assign fim_amostra = fim;
 
 assign	oCS_n		=	~go_en;

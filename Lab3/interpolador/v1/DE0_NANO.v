@@ -175,12 +175,13 @@ wire						wSPI_CLK_n;
 wire		     [11:0]	adc_data;       // Dados do ADC (12 bits)
 wire 			  [6:0]	cnt_periodo;	 // contagem de amostras em um período	
 wire 						zer0;
+wire 						amostra_pronta;
 
 //=======================================================
 
 //=======================================================
 
-wire FS_ADCo = ; 							// frequencia de saida das amostras do ADC 
+//wire FS_ADCo = ; 							// frequencia de saida das amostras do ADC 
 
 
 
@@ -190,7 +191,7 @@ wire FS_ADCo = ; 							// frequencia de saida das amostras do ADC
 //=======================================================
 SPIPLL		U0	(
 						.inclk0(CLOCK_50),
-						.c0(wSPI_CLK),
+						.c0(wSPI_CLK),			//clk divided by 25 : 50Mhz/25 = 2MHz
 						.c1(wSPI_CLK_n)
 					);
 
@@ -212,6 +213,7 @@ ADC_CTRL		U1	(
 					);
 					
 top_level  U2	(	 .clk(CLOCK_50),
+						 .reset(KEY[0]),
 						 .entrada(adc_data),
 						 .flag(zer0),
 						 .cnt(cnt_periodo)
