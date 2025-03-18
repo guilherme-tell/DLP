@@ -1,0 +1,6 @@
+- Filtro Q foi tirado para não atrasar as amostras já que agora elas não são entregues ao harware junto com o clock;
+- contagem não conta amostras e sim clocks;
+- 4096/16 = 256 <- numero de amostras;
+- Tb simula a atraso do ADC para entregar amostra pronta;
+- reset reg cnt e reg ctrl ao inicializar;
+- reset no interpolador??
