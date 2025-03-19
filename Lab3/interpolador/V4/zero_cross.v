@@ -1,6 +1,6 @@
 module zero_cross 
 						(input clk,
-						//input reset,
+						input reset,
 						input enable,
 						input signed [11:0] x,
 						output reg flag

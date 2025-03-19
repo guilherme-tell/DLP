@@ -1,6 +1,6 @@
 module top_level (input clk,
 						input reset,
-						input signed [31:0] entrada,
+						input signed [11:0] entrada,
 						input amostra_pronta,
 						output flag,
 						output reg ctrl,
@@ -13,7 +13,7 @@ module top_level (input clk,
 	//reg ctrl;
 	
 	zero_cross  cruza_zero     (.clk(clk),
-										 //.reset(reset),
+										 .reset(reset),
 										 .enable(amostra_pronta),
 										 .x(entrada),
 										 .flag(flag)
@@ -24,42 +24,35 @@ module top_level (input clk,
 	always @ (posedge clk) begin
 	
 	if(reset)begin
-	
-		if(flag) ctrl <= ~ctrl;
 		
+		if(flag) ctrl <= ~ctrl;
+	
 		if(ctrl) cnt <= cnt + 16'd1;
 		
-		else cnt <= 16'd0;				//ctrl == 0
+		else cnt <= 16'd0;
 	
-	end else begin 
+
+	end else  begin 
 					ctrl <= 1'b0;
 					cnt <= 16'd0; 
-					
 				end
 	end
 	
-	always @ (negedge ctrl) begin
+		always @ (negedge ctrl) begin
 	
-		if(reset) contagem_final <= cnt;
+			if(reset) contagem_final <= cnt;
+			
+			else contagem_final <= 16'd0;
 		
-		else contagem_final <= 16'd0;
-		
-	end
+		end
 	
-	wire [24:0] contagem_ext = contagem_final;
-	assign freq = 25'd50000000 / contagem_final;					// tb
+	wire [24:0] contagem_ext;
+	assign contagem_ext = contagem_final;
 	
-	//freq = 25'd125000 / (cnt/16);			//DE0
+	assign freq = (contagem_ext == 25'd0) ? (25'dz)  : (25'd2000000 / contagem_ext);	
 	
-	/*
-	calc_freq finalfreq ( 	.clk(clk),
-						.zer0(flag),
-						.cnt(contagem_final),
-						.freq(freq)
-						);
-
 	
-				
+		/*				
 	firQ fir_int (	.clk(clk), 
 						//.reset(reset),
 						.enable(amostra_pronta),
