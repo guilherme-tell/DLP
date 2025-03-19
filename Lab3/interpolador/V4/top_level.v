@@ -49,8 +49,7 @@ module top_level (input clk,
 	wire [24:0] contagem_ext;
 	assign contagem_ext = contagem_final;
 	
-	assign freq = (contagem_ext == 25'd0) ? (25'dz)  : (25'd2000000 / contagem_ext);	
-	
+	assign freq = (contagem_ext == 25'd0) ? (25'd1)  : (25'd2000000 / contagem_ext);	
 	
 		/*				
 	firQ fir_int (	.clk(clk), 
