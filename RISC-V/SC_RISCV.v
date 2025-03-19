@@ -1,129 +1,144 @@
-module SC_RISCV (input clk,rst,
-					  output signed [31:0] ALUResult);
+module SC_RISCV(
+					input clk, rst, 
+					input signed [31:0] INPUT,
+					output signed [31:0] ALUResult,
+					output reg signed [31:0] OUTPUT
+					);
 
-	wire [3:0] PC_out;
-	wire zero;
-	
-	wire Rslt_source_w, Mem_write_w, ALU_source, REG_write_w, PCSrc_w;
-	reg signed [31:0] ImmExt;
-	wire[31:0] PC_target;
-	assign PC_target = PC_out + ImmExt;	
-	wire [3:0] PC_load_in;
-	assign PC_load_in = (PCSrc_w == 1'b0) ? PC_out : PC_target[3:0]; 
+wire [3:0] PC_out;
+wire [31:0] PC_Next;
+wire [31:0] Instr;
+wire Zero;
+wire [6:0] op = Instr[6:0];
+wire [2:0] funct3 = Instr[14:12];
+wire funct7_5 = Instr[30];
+wire PCSrc;
+wire ResultSrc;
+wire MemWrite;
+wire ALUSrc;
+wire [1:0] ImmSrc;
+wire RegWrite;
+wire [2:0] ALUControl;
+wire signed [11:0] Imm_lw, Imm_sw, Imm_b;		
+reg signed [31:0] ImmExt;
+wire signed [31:0] RD1, RD2, WD3;
+wire signed [31:0] ReadData;
+wire signed [31:0] SrcB;
+wire InputSRC;
+wire signed [31:0] Result;
+wire OutputSRC;
 
-	wire[2:0] ALU_ctrl_w;
+always @(posedge clk or posedge OutputSRC )begin
 
-	wire [1:0] Imm_source_w;
-	
-	wire [31:0] Inst;	
-	
-	// extensão do sinal de 12 para 32 bits
-//--------------------------------------------	
-	wire signed [11:0] Imm_lw,Imm_sw,Imm_b;
-
-	assign Imm_lw = Inst[31:20];
-	assign Imm_sw = {Inst[31:25],Inst[11:7]};		// concatena os 2 segmentos para formar o imediato de sw
-	
-	assign Imm_b = {Inst[31],Inst[7],Inst[30:25],Inst[11:8],1'b0};		// concatena os 4 segmentos de imediato p/ instrução do tipo B + zero no lugar do LSB
-	
-	wire signed [31:0] RD1,RD2,WD3;									
-	wire signed [31:0] ReadData;	
-	
-	ProgramCounter PC( .clk(clk), 
-						    .clr_n(rst), 
-						    .load_en(PCSrc_w),
-						    .ena(1'b1),
-                      .PC_load(PC_load_in),
-					       .PC_out(PC_out)
-							);
-							
-
-	
-	InstructionMemory #( .addr_w (4)) Inst_Mem
-							 ( .clk(clk),
-								.rst(rst),
-								.A(PC_out),
-								.RD(Inst)
-							  );
+	if(OutputSRC)
+		OUTPUT = RD2;										// output registrado (recebe RD2 com sinal de controle outputSRC)
+	else 
+		OUTPUT = 32'dz;
+end
 
 
-	
-	// mux para habilitar lw ou sw com sinal de controle SRC
-	always @(*) begin
-		//case(ImmSRC)
-		case(Imm_source_w)
-			2'b00: ImmExt = Imm_lw;
-			2'b01: ImmExt = Imm_sw;
-			2'b10: ImmExt = Imm_b;
-			2'b11: ImmExt = 32'd0;
-		endcase		
-	end
+assign PC_Next = PC_out + ImmExt;
 
-	//assign ImmExt = (ImmSRC == 1'b1) ? Imm_sw : Imm_lw;
-//--------------------------------------------		
+//---------------------------------------------------	
+//	mux do input
+//---------------------------------------------------	
 
-								
+assign WD3 = (InputSRC == 1'b1) ? INPUT : Result; 
 
+//---------------------------------------------------	
+					
+PC PC (
+		.clk(clk), 
+		.rst(rst), 
+		.ena(1'b1), 
+		.load(PCSrc),
+		.PC_load(PC_Next[3:0]),
+		.PC_out(PC_out) 
+	   );	
+
+
+
+Instr_Mem #(.ADDR_WIDTH(4)) Instr_Mem
+			  (
+			  .A(PC_out),
+			  .clk(clk), 
+			  .RD(Instr)
+			  );
+
+// ImmExt
+//---------------------------------------------------  
+
+
+assign Imm_lw = Instr[31:20];
+assign Imm_sw = {Instr[31:25] , Instr[11:7]};
+assign Imm_b  = {Instr[31], Instr[7], Instr[30:25], Instr[11:8],1'b0};
+
+
+always @ (*)
+begin
+	case(ImmSrc)
+		2'b00: ImmExt = Imm_lw;
+		2'b01: ImmExt = Imm_sw;
+		2'b10: ImmExt = Imm_b;
+		2'b11: ImmExt = 32'd0;
+	endcase
 		
-	
-	RegisterFile RegFile (  .WD3(WD3),
-									.rst(rst),
-									.A1(Inst[19:15]),
-									.A2(Inst[24:20]), 
-									.A3(Inst[11:7]),
-									//.WE3(1'b1), 
-									.WE3(REG_write_w),
-									.clk(clk),
-									.RD1(RD1),
-									.RD2(RD2)
-								);					
- 
-//--------------------------------------------	
-	wire signed [31:0] SrcB;
-	
-	// mux para habilitar RD2 ou imediato extendido na entrada da ULA
-	//assign SrcB = (ALUSrc == 1'b0) ? RD2 : ImmExt; 
-	  assign SrcB = (ALU_source == 1'b0) ? RD2 : ImmExt;
-//--------------------------------------------	 
- 
- ALU ALU ( .SrcA(RD1),
-			  .SrcB(SrcB),
-			  //.ALUCOntrol(3'b011),
-			  .ALUCOntrol(ALU_ctrl_w),
-			  .ALUResult(ALUResult),
-			  .Zero(zero) 
-			 );
-			 
-//--------------------------------------------
-	// mux para decidir se sera escrito no regfile o resultado da ULA ou o conteudo selecionado da DataMemory
-	assign WD3 = (Rslt_source_w == 1'b0) ? ALUResult : ReadData; 
-//--------------------------------------------			 
-			 
-DataMemory #(  .addr_w(5))  Data_Mem
-				(  .clk(clk),
-					//.WE(1'b1),
-					.WE(Mem_write_w),
-					.rst(rst),
-					.A(ALUResult[4:0]),					// truncado pq a memoria tem so 32 bits
-					.WD(RD2),
-					.RD(ReadData)
-				);
+end 
 
-//---------------------------------------------------------------------------
+//---------------------------------------------------		 
 
+assign Result = (ResultSrc == 1'b0) ? ALUResult	: ReadData; 
+			 
+Reg_File Reg_File (
+						 .WD3(WD3),
+						 .A1(Instr[19:15]), 
+						 .A2(Instr[24:20]), 
+						 .A3(Instr[11:7]),
+						 .clk(clk), 
+						 .WE3(RegWrite),
+						 .RD1(RD1), 
+						 .RD2(RD2)
+						); 
+						
+
+
+assign SrcB = (ALUSrc == 1'b0) ? RD2 : ImmExt;						
+						
+ALU ALU ( 
+			.SrcA(RD1), 
+			.SrcB(SrcB),
+			.ALUControl(ALUControl),
+			.ALUResult(ALUResult),
+			.Zero(Zero)
+			);
+			
+
+Data_Mem #(.ADDR_WIDTH(5)) Data_Mem
+			(
+			.WD(RD2),
+			.A(ALUResult[4:0]),
+			.we(MemWrite), 
+			.clk(clk),
+			.RD(ReadData)
+			);
+			
+
+			
 				
-CTRL_unit Control_Unit(	.clk(clk), 
-								.op(Inst[6:0]),
-								.funct3(Inst[14:12]),
-								.funct7(Inst[30]),
-								.Zero(zero),
-								.ALUControl(ALU_ctrl_w),
-								.ResultSrc(Rslt_source_w),
-								.ImmSrc(Imm_source_w),
-								.MemWrite(Mem_write_w),
-								.ALUSrc(ALU_source),
-								.RegWrite(REG_write_w),
-								.PCSrc(PCSrc_w)
-						);
-
-endmodule
+ControlUnit ControlUnit(
+						      .Zero(Zero),
+						      .op(op),
+						      .funct3(funct3),
+						      .funct7_5(funct7_5),
+						      .PCSrc(PCSrc),
+						      .ResultSrc(ResultSrc),
+						      .MemWrite(MemWrite),
+						      .ALUSrc(ALUSrc),
+						      .ImmSrc(ImmSrc),
+						      .RegWrite(RegWrite),
+						      .ALUControl(ALUControl),
+								.InputSRC(InputSRC),
+								.OutputSRC(OutputSRC)
+						     );
+					
+endmodule 
