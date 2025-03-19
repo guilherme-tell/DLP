@@ -176,7 +176,7 @@ input 		     [1:0]		GPIO_1_IN;
 wire						wSPI_CLK;
 wire						wSPI_CLK_n;
 wire		     [11:0]	adc_data;       // Dados do ADC (12 bits)
-wire 			  [15:0]	cnt_periodo;	 // contagem de amostras em um perÃ­odo	
+wire 			  [15:0]	cnt_periodo,contagem_final;	 // contagem de amostras em um perÃ­odo	
 wire 						zer0;
 wire 						amostra_pronta;
 wire [24:0] freq;
@@ -226,16 +226,18 @@ top_level  U2	(	 .clk(wSPI_CLK),
 						 .amostra_pronta(amostra_pronta),
 						 .flag(zer0),
 						 .cnt(cnt_periodo),
-						 .ctrl(ctrl)
+						 .ctrl(ctrl),
+						 .contagem_final(contagem_final),
+						 .freq(freq)
 						 //.x_filt(y)
 					);
 					
-calc_freq U3 (.clk(wSPI_CLK),
+/*calc_freq U3 (.clk(wSPI_CLK),
 			     .zer0(zer0),
 					.cnt(cnt_periodo),
 					.freq(freq)
 						);
-
+*/
 //assign LED[7:0] = cnt_periodo; // Mostra a contagem de amostras em 7 LEDs
 
 endmodule
